@@ -1,0 +1,31 @@
+# Les packages nécessaires pour le projet
+# --- Core LangChain ---
+langchain>=0.2
+langchain-community>=0.2
+langchain-openai>=0.2
+tiktoken
+langchain-chroma
+
+# --- RAG & Vector Store ---
+
+faiss-cpu
+chromadb
+pypdf
+python-docx
+
+# --- Outils API & Web ---
+tavily-python
+yfinance
+requests
+
+# --- Outils d'Analyse & Calcul ---
+pandas
+numpy
+scipy
+
+# --- UI Frameworks ---
+chainlit
+streamlit
+
+# --- Configuration ---
+python-dotenv

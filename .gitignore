@@ -1,0 +1,29 @@
+# --- SECRETS ---
+.env
+
+# --- ENVIRONNEMENT VIRTUEL ---
+venv/
+.venv/
+
+# --- DONNÉES PRIVÉES ET BASE DE DONNÉES ---
+data/
+
+# Le dossier 'vectorstore' est généré par ingest.py.
+vectorstore/
+
+# --- CACHE PYTHON ---
+# Fichiers temporaires générés par Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# --- IDE (Éditeurs de Code) ---
+# Dossiers de configuration pour VSCode ou PyCharm
+.vscode/
+.idea/
+
+# --- FICHIERS SYSTÈME (OS) ---
+# Fichiers temporaires de macOS et Windows
+.DS_Store
+Thumbs.db
