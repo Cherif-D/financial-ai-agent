@@ -14,24 +14,12 @@ Pour l'exécuter :
 3.  Exécutez `python rag/ingest.py` depuis la racine du projet.
 """
 
-# --- Imports ---
-import os       # Pour manipuler les chemins de fichiers
-import glob     # Pour trouver des fichiers (ex: *.pdf)
-
-# Imports depuis notre configuration centrale
-from app.config import DOCS_DIR, PERSIST_DIR, VS_BACKEND
-
-# Imports de LangChain pour la manipulation de texte
+import os, glob
+from app.config import DOCS_DIR, PERSIST_DIR, VS_BACKEND     # <= pas app.config
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import PyPDFLoader, Docx2txtLoader
-
-# Import du "cerveau" qui transforme le texte en vecteurs
 from langchain_openai import OpenAIEmbeddings
-
-# Imports des deux "méthodes de rangement" (bases de données vectorielles)
-from langchain_community.vectorstores import FAISS
-from langchain_chroma import Chroma
-
+from langchain_community.vectorstores import FAISS  
 # --- Fonctions ---
 
 def load_docs(data_dir=DOCS_DIR):
@@ -107,29 +95,11 @@ def build_index():
     # Lit la variable VS_BACKEND de notre config pour décider
     # quelle base de données utiliser.
     
-    print(f"Utilisation du backend: {VS_BACKEND}")
-    
-    if VS_BACKEND.lower() == "chroma":
-        # --- Option A: ChromaDB (Robuste, "Production") ---
-        # Crée la base Chroma à partir des morceaux (splits)
-        # en utilisant le modèle d'embeddings.
-        # `persist_directory` dit à Chroma où sauvegarder ses fichiers sur le disque.
-        print(f"Construction de l'index Chroma dans {PERSIST_DIR}...")
-        vectordb = Chroma.from_documents(
-            splits, 
-            embedding=embeddings, 
-            persist_directory=PERSIST_DIR
-        )
-        
-    else:
-        # --- Option B: FAISS (Rapide, "Développement") ---
-        # Crée l'index FAISS en mémoire à partir des morceaux.
-        print(f"Construction de l'index FAISS...")
-        vectordb = FAISS.from_documents(splits, embeddings)
-        
-        # Sauvegarde l'index (qui est en mémoire) dans un fichier sur le disque.
-        print(f"Sauvegarde de l'index FAISS dans {PERSIST_DIR}...")
-        vectordb.save_local(PERSIST_DIR)
+    print("Construction de l'index FAISS...")
+    vectordb = FAISS.from_documents(splits, embeddings)
+    print(f"Sauvegarde de l'index FAISS dans {PERSIST_DIR}...")
+    vectordb.save_local(PERSIST_DIR)
+
 
     print("\n--- Ingestion Terminée ---")
     print(f"✅ Index construit et sauvegardé dans {PERSIST_DIR}")

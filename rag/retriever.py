@@ -11,19 +11,10 @@ Son rôle est de :
 3.  Spécifier *comment* chercher (par exemple, ramener les "K" meilleurs résultats).
 """
 
-# Imports depuis notre configuration centrale
 from app.config import PERSIST_DIR, VS_BACKEND
-
-# Import du "cerveau" qui transforme le texte en vecteurs
-# On en a besoin ici pour que le retriever puisse transformer
-# la QUESTION de l'utilisateur en vecteur pour la comparer
-# aux vecteurs des documents.
 from langchain_openai import OpenAIEmbeddings
-
-# Imports des "lecteurs" de bases de données vectorielles
 from langchain_community.vectorstores import FAISS
-# grace au warning d'avant, on separe les deux imports
-from langchain_chroma import Chroma
+
 
 
 def get_retriever(k=4):
@@ -49,29 +40,12 @@ def get_retriever(k=4):
     # lors de l'ingestion (ingest.py).
     embeddings = OpenAIEmbeddings()
 
-    if VS_BACKEND.lower() == "chroma":
-        # --- Option A: Charger Chroma (Production) ---
-        # On se connecte à la base de données persistante sur le disque.
-        db = Chroma(
-            persist_directory=PERSIST_DIR,
-            embedding_function=embeddings
-        )
-    else:
-        # --- Option B: Charger FAISS (Développement) ---
-        # On charge l'index FAISS depuis le fichier local.
-        # `allow_dangerous_deserialization=True` est requis par LangChain
-        # car FAISS utilise 'pickle', un format qui peut être (en théorie)
-        # non sécurisé. Dans notre cas, c'est sans danger.
-        db = FAISS.load_local(
-            PERSIST_DIR,
-            embeddings,
-            allow_dangerous_deserialization=True
-        )
-
-    # --- Étape Finale: Transformer la DB en Retriever ---
-    # `db` est la base de données (elle contient les données).
-    # `retriever` est le chercheur (il sait *comment* chercher).
-    # On lui dit de n'utiliser que le "k" (Top-K) meilleurs résultats.
+    embeddings = OpenAIEmbeddings()
+    db = FAISS.load_local(
+    PERSIST_DIR,
+    embeddings,
+    allow_dangerous_deserialization=True
+     )
     return db.as_retriever(search_kwargs={"k": k})
 
 if __name__ == "__main__":
