@@ -42,6 +42,9 @@ if not OPENAI_API_KEY:
 # définie dans le .env. C'est un bon équilibre coût/performance.
 MODEL_NAME = os.getenv("MODEL_NAME", "gpt-4o-mini")
 
+# creator 
+CREATOR_NAME = os.getenv("CREATOR_NAME", "Diallo Mamadou Cherif")
+
 
 # === Section 2: Configuration du RAG (Retrieval-Augmented Generation) ===
 # 
@@ -61,7 +64,7 @@ PERSIST_DIR = os.getenv("PERSIST_PATH", "vectorstore")
 # Le code d'ingestion (ingest.py) devra lire cette variable pour
 # savoir quelle logique de sauvegarde utiliser.
 # faiss est développé par Facebook(plus rapide, comme bloc-notes), chroma(petite base de données) est développé par ChromaDB.
-VS_BACKEND = os.getenv("VECTORSTORE_BACKEND", "chroma")  # Options: 'faiss' ou 'chroma'
+VS_BACKEND = os.getenv("VECTORSTORE_BACKEND", "faiss")  # Options: 'faiss' ou 'chroma'
 
 
 # === Section 3: Configuration des Outils (Tools) ===
@@ -72,8 +75,10 @@ VS_BACKEND = os.getenv("VECTORSTORE_BACKEND", "chroma")  # Options: 'faiss' ou '
 TAVILY_API_KEY = os.getenv("TAVILY_API_KEY")
 
 # Vérification de sécurité : Si la recherche web est considérée comme
-if not TAVILY_API_KEY:
-    raise SystemExit(
-        "ERREUR: TAVILY_API_KEY non définie dans le fichier .env. "
-        "Veuillez créer un compte sur tavily.com pour en obtenir une et le mettre dans le fichier .env."
-    )
+# --- AU LIEU DE lever SystemExit directement, fais ceci ---
+def validate_config():
+    missing = []
+    if not OPENAI_API_KEY: missing.append("OPENAI_API_KEY")
+    if not TAVILY_API_KEY: missing.append("TAVILY_API_KEY")
+    if missing:
+        raise SystemExit(f"ERREUR: clés manquantes: {', '.join(missing)}")
